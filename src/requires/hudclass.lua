@@ -2274,7 +2274,8 @@ function HudClass(Nav, c, u, s, atlas, antigrav, hover, shield, warpdrive, weapo
                 panelInterplanetary = nil
             end 
             local function DrawTanks()
-                local function DrawTank(x, nameSearchPrefix, nameReplacePrefix, tankTable, fuelTimeLeftTable,
+                local getPrefixes = GetFuelTankPrefixes
+                local function DrawTank(x, nameSearchPrefixes, nameReplacePrefix, tankTable, fuelTimeLeftTable,
                     fuelPercentTable)
                     
                     local y1 = tankY
@@ -2338,8 +2339,11 @@ function HudClass(Nav, c, u, s, atlas, antigrav, hover, shield, warpdrive, weapo
                                 tankTable[i][tankLastTime] = curTime
                                 tankTable[i][tankLastMass] = fuelMass
                             end
-                            if name == nameSearchPrefix then
-                                name = stringf("%s %d", nameReplacePrefix, i)
+                            for _, nameSearchPrefix in pairs(nameSearchPrefixes) do
+                                if name == nameSearchPrefix then
+                                    name = stringf("%s %d", nameReplacePrefix, i)
+                                    break
+                                end
                             end
                             if slottedIndex == 0 then
                                 name = name .. " *"
@@ -2400,9 +2404,9 @@ function HudClass(Nav, c, u, s, atlas, antigrav, hover, shield, warpdrive, weapo
                 if (fuelX ~= 0 and fuelY ~= 0) then
                     tankMessage = svgText(fuelX, fuelY, "", "txtstart pdim txtfuel")
                     tankY = fuelY
-                    DrawTank( fuelX, "Atmospheric ", "ATMO", atmoTanks, fuelTimeLeft, fuelPercent)
-                    DrawTank( fuelX, "Space Fuel T", "SPACE", spaceTanks, fuelTimeLeftS, fuelPercentS)
-                    DrawTank( fuelX, "Rocket Fuel ", "ROCKET", rocketTanks, fuelTimeLeftR, fuelPercentR)
+                    DrawTank( fuelX, getPrefixes("atmo"), "ATMO", atmoTanks, fuelTimeLeft, fuelPercent)
+                    DrawTank( fuelX, getPrefixes("space"), "SPACE", spaceTanks, fuelTimeLeftS, fuelPercentS)
+                    DrawTank( fuelX, getPrefixes("rocket"), "ROCKET", rocketTanks, fuelTimeLeftR, fuelPercentR)
                 end
         
             end
