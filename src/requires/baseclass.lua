@@ -27,6 +27,9 @@ function programClass(Nav, c, u, atlas, vBooster, hover, telemeter_1, antigrav, 
         local systime = s.getArkTime
         local uclamp = utils.clamp
         local navCom = Nav.axisCommandManager
+        local isInClass = s.isItemInClass
+        local getItem = s.getItem
+        local getMaxVolume = GetFuelTankMaxVolume
 
         local coreHalfDiag = 13
         local elementsID = c.getElementIdList()
@@ -261,11 +264,30 @@ function programClass(Nav, c, u, atlas, vBooster, hover, telemeter_1, antigrav, 
                     return vanillaMaxVolume            
                 end
 
+                local function buildTank(id, name, fuelType, maxVolume, massByLitter, handling, massEmpty, curMass, curTime, slottedTanks)
+                    local volume = maxVolume * massByLitter
+                    if handling > 0 then
+                        volume = volume + (volume * (handling * 0.2))
+                    end
+                    volume =  CalculateFuelVolume(curMass, volume)
+                    local slottedIndex = 0
+                    for j = 1, slottedTanks do
+                        if name == jdecode(u[fuelType .. "fueltank_" .. j].getWidgetData()).name then
+                            slottedIndex = j
+                            break
+                        end
+                    end
+                    return {id, string.sub(name, 1, 12), volume, massEmpty, curMass, curTime, slottedIndex}
+                end
+
                 local eleName = c.getElementNameById
                 local checkTanks = (fuelX ~= 0 and fuelY ~= 0)
                 local slottedTanksAtmo = _G["atmofueltank_size"]
                 local slottedTanksSpace = _G["spacefueltank_size"]
                 local slottedTanksRocket = _G["rocketfueltank_size"]
+                local atmoUnitMassByLitter = 4
+                local spaceUnitMassByLitter = 6
+                local rocketUnitMassByLitter = 0.8
                 for k in pairs(elementsID) do --Look for space engines, landing gear, fuel tanks if not slotted and c size
                     local type = c.getElementDisplayNameById(elementsID[k])
                     if stringmatch(type, '^.*Atmospheric Engine$') then
@@ -299,109 +321,26 @@ function programClass(Nav, c, u, atlas, vBooster, hover, telemeter_1, antigrav, 
                         end
                     end
                     eleTotalMaxHp = eleTotalMaxHp + eleMaxHp(elementsID[k])
-                    if checkTanks and (type == "Atmospheric Fuel Tank" or type == "Space Fuel Tank" or type == "Rocket Fuel Tank") then
-                        local hp = eleMaxHp(elementsID[k])
-                        local mass = eleMass(elementsID[k])
-                        local curMass = 0
-                        local curTime = systime()
-                        if (type == "Atmospheric Fuel Tank") then
-                            local vanillaMaxVolume = 400
-                            local massEmpty = 35.03
-                            if hp > 10000 then
-                                vanillaMaxVolume = 51200 -- volume in kg of L tank
-                                massEmpty = 5480
-                            elseif hp > 1300 then
-                                vanillaMaxVolume = 6400 -- volume in kg of M
-                                massEmpty = 988.67
-                            elseif hp > 150 then
-                                vanillaMaxVolume = 1600 --- volume in kg small
-                                massEmpty = 182.67
-                            end
-                            curMass = mass - massEmpty
-                            if fuelTankHandlingAtmo > 0 then
-                                vanillaMaxVolume = vanillaMaxVolume + (vanillaMaxVolume * (fuelTankHandlingAtmo * 0.2))
-                            end
-                            vanillaMaxVolume =  CalculateFuelVolume(curMass, vanillaMaxVolume)
-                            
+                    if checkTanks then
+                        local itemId = c.getElementItemIdById(elementsID[k])
+                        if isInClass(itemId, "FuelContainer") then
+                            local item = getItem(itemId)
+                            local mass = eleMass(elementsID[k])
+                            local curTime = systime()
+                            local vanillaMaxVolume = getMaxVolume(itemId, item.size)
+                            local massEmpty = item.unitMass
                             local name = eleName(elementsID[k])
-                            
-                            local slottedIndex = 0
-                            for j = 1, slottedTanksAtmo do
-                                if name == jdecode(u["atmofueltank_" .. j].getWidgetData()).name then
-                                    slottedIndex = j
-                                    break
-                                end
+                            local curMass = mass - massEmpty
+                            if isInClass(itemId, "AtmoFuelContainer") then
+                                atmoTanks[#atmoTanks + 1] = buildTank(elementsID[k], name, "atmo", vanillaMaxVolume, atmoUnitMassByLitter,
+                                                                        fuelTankHandlingAtmo, massEmpty, curMass, curTime, slottedTanksAtmo)
+                            elseif isInClass(itemId, "RocketFuelContainer") then
+                                rocketTanks[#rocketTanks + 1] = buildTank(elementsID[k], name, "rocket", vanillaMaxVolume, rocketUnitMassByLitter,
+                                                                    fuelTankHandlingRocket / 2, massEmpty, curMass, curTime, slottedTanksRocket)
+                            elseif isInClass(itemId, "SpaceFuelContainer") then
+                                spaceTanks[#spaceTanks + 1] = buildTank(elementsID[k], name, "space", vanillaMaxVolume, spaceUnitMassByLitter,
+                                                                        fuelTankHandlingSpace, massEmpty, curMass, curTime, slottedTanksSpace)
                             end
-                            
-                            local tank = {elementsID[k], string.sub(name, 1, 12),
-                                                        vanillaMaxVolume, massEmpty, curMass, curTime, slottedIndex}
-                            atmoTanks[#atmoTanks + 1] = tank
-                        end
-                        if (type == "Rocket Fuel Tank") then
-                            local vanillaMaxVolume = 320
-                            local massEmpty = 173.42
-                            if hp > 65000 then
-                                vanillaMaxVolume = 40000 -- volume in kg of L tank
-                                massEmpty = 25740
-                            elseif hp > 6000 then
-                                vanillaMaxVolume = 5120 -- volume in kg of M
-                                massEmpty = 4720
-                            elseif hp > 700 then
-                                vanillaMaxVolume = 640 --- volume in kg small
-                                massEmpty = 886.72
-                            end
-                            curMass = mass - massEmpty
-                            if fuelTankHandlingRocket > 0 then
-                                vanillaMaxVolume = vanillaMaxVolume + (vanillaMaxVolume * (fuelTankHandlingRocket * 0.1))
-                            end
-                            vanillaMaxVolume =  CalculateFuelVolume(curMass, vanillaMaxVolume)
-                            
-                            local name = eleName(elementsID[k])
-                            
-                            local slottedIndex = 0
-                            for j = 1, slottedTanksRocket do
-                                if name == jdecode(u["rocketfueltank_" .. j].getWidgetData()).name then
-                                    slottedIndex = j
-                                    break
-                                end
-                            end
-                            
-                            local tank = {elementsID[k], string.sub(name, 1, 12),
-                                                        vanillaMaxVolume, massEmpty, curMass, curTime, slottedIndex}
-                            rocketTanks[#rocketTanks + 1] = tank
-                        end
-                        if (type == "Space Fuel Tank") then
-                            local vanillaMaxVolume = 600
-                            local massEmpty = 35.03
-                            if hp > 10000 then
-                                vanillaMaxVolume = 76800 -- volume in kg of L tank
-                                massEmpty = 5480
-                            elseif hp > 1300 then
-                                vanillaMaxVolume = 9600 -- volume in kg of M
-                                massEmpty = 988.67
-                            elseif hp > 150 then
-                                vanillaMaxVolume = 2400 -- volume in kg of S
-                                massEmpty = 182.67                                
-                            end
-                            curMass = mass - massEmpty
-                            if fuelTankHandlingSpace > 0 then
-                                vanillaMaxVolume = vanillaMaxVolume + (vanillaMaxVolume * (fuelTankHandlingSpace * 0.2))
-                            end
-                            vanillaMaxVolume =  CalculateFuelVolume(curMass, vanillaMaxVolume)
-                            
-                            local name = eleName(elementsID[k])
-                            
-                            local slottedIndex = 0
-                            for j = 1, slottedTanksSpace do
-                                if name == jdecode(u["spacefueltank_" .. j].getWidgetData()).name then
-                                    slottedIndex = j
-                                    break
-                                end
-                            end
-                            
-                            local tank = {elementsID[k], string.sub(name, 1, 12),
-                                                        vanillaMaxVolume, massEmpty, curMass, curTime, slottedIndex}
-                            spaceTanks[#spaceTanks + 1] = tank
                         end
                     end
                 end
