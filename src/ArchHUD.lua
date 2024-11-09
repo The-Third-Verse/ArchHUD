@@ -10,7 +10,7 @@ end
 
 -- User variables. Must be global to work with databank system
     useTheseSettings = false --export:  Change this to true to override databank saved settings
-    userControlScheme = "virtual joystick" --export: (Default: "virtual joystick") Set to "virtual joystick", "mouse", or "keyboard". This can be set by holding SHIFT and clicking the button in lower left of main Control buttons view.
+    userControlScheme = "keyboard" --export: (Default: "keyboard") Set to "virtual joystick", "mouse", or "keyboard". This can be set by holding SHIFT and clicking the button in lower left of main Control buttons view.
     soundFolder = "archHUD" --export: (Default: "archHUD") Set to the name of the folder with sound files in it. Must be changed from archHUD to prevent other scripts making your PC play sounds.
     privateFile = "name" --export: (Default "name") Set to the name of the file for private locations to prevent others from getting your private locations. Filename should end in .lua
     -- True/False variables
