@@ -1,6 +1,11 @@
 ## ChangeLog - Most recent changes at the top
 
-Version 2.013 - Minor bug fixes
+Version 2.104 - MyDU Enhancement Update
+- Improve fuel tank detection, allowing creation of new fuel tank
+- Change default user control scheme to "keyboard"
+- Add the possibility to load a custom atlas
+
+Version 2.103 - Minor bug fixes
 - Fixed 100k/hr up speed limit in atmo, now limited to adjusted atmo speed limit.
 
 Version 2.102 - Six Axis Joystick Support
