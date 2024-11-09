@@ -1,7 +1,6 @@
 require 'src.slots'
 
 Nav = Navigator.new(system, core, unit)
-local atlas = require("atlas")
 --
 function p(msg)
     system.print(system.getArkTime()..": "..msg)
@@ -13,6 +12,7 @@ end
     userControlScheme = "keyboard" --export: (Default: "keyboard") Set to "virtual joystick", "mouse", or "keyboard". This can be set by holding SHIFT and clicking the button in lower left of main Control buttons view.
     soundFolder = "archHUD" --export: (Default: "archHUD") Set to the name of the folder with sound files in it. Must be changed from archHUD to prevent other scripts making your PC play sounds.
     privateFile = "name" --export: (Default "name") Set to the name of the file for private locations to prevent others from getting your private locations. Filename should end in .lua
+    customAtlas = "atlas" --export: (Default "atlas") Custom atlas file to override NQ atlas (file need to be located in autoconf/custom/)
     -- True/False variables
     -- NOTE: saveableVariablesBoolean below must contain any True/False variables that needs to be saved/loaded from databank.
         freeLookToggle = true --export: (Default: true) Set to false for vanilla DU free look behavior.
@@ -149,6 +149,11 @@ end
             hudTickRate={set=function (i)hudTickRate=i end,get=function() return hudTickRate end}, ExtraEscapeThrust={set=function (i)ExtraEscapeThrust=i end,get=function() return ExtraEscapeThrust end}, 
             ExtraLongitudeTags={set=function (i)ExtraLongitudeTags=i end,get=function() return ExtraLongitudeTags end}, ExtraLateralTags={set=function (i)ExtraLateralTags=i end,get=function() return ExtraLateralTags end},
             ExtraVerticalTags={set=function (i)ExtraVerticalTags=i end,get=function() return ExtraVerticalTags end}, allowedHorizontalDrift={set=function (i)allowedHorizontalDrift=i end,get=function() return allowedHorizontalDrift end}, FastOrbit={set=function (i)FastOrbit=i end,get=function() return FastOrbit end} }
+
+local s, atlas = pcall(require, "autoconf/custom/" .. customAtlas)
+if not s then
+    atlas = require("atlas")
+end
 
 local requireTable = {"autoconf/custom/archhud/globals","autoconf/custom/archhud/hudclass", "autoconf/custom/archhud/apclass", "autoconf/custom/archhud/controlclass",
                       "autoconf/custom/archhud/atlasclass", "autoconf/custom/archhud/baseclass", "autoconf/custom/archhud/shieldclass",
