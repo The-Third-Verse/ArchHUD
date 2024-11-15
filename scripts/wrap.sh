@@ -28,7 +28,7 @@ WORK_DIR=${ROOTDIR}/scripts/work
 # Extract the exports because the minifier will eat them.
 grep "\-- \?export:" $LUA_SRC | sed -e 's/^[ \t]*/        /' -e 's/-- export:/--export:/' > $WORK_DIR/ArchHUD.exports
 
-VERSION_NUMBER=`grep "VERSION_NUMBER = .*" $LUA_SRC | sed -E "s/\s*VERSION_NUMBER = (.*)/\1/"`
+VERSION_NUMBER=`grep "VERSION_NUMBER = .*" $LUA_SRC | sed -E "s/\s*VERSION_NUMBER = ([0-9\.]*)[\r\n]*/\1/"`
 if [[ "${VERSION_NUMBER}" == "" ]]; then
     echo "ERROR: Failed to detect version number"; exit 1
 fi
@@ -75,9 +75,9 @@ lua ${ROOTDIR}/scripts/wrap.lua --handle-errors-min --output yaml \
 
 # Re-insert the exports
 if [[ "$MINIFY" == "true" ]]; then
-    sed "/script={}/e cat $WORK_DIR/ArchHUD.exports" $WORK_DIR/ArchHUD.wrapped.conf > $CONF_DST
+    sed "/__wrap_lua__printError=true/e cat $WORK_DIR/ArchHUD.exports" $WORK_DIR/ArchHUD.wrapped.conf > $CONF_DST
 else
-    sed "/script = {}/e cat $WORK_DIR/ArchHUD.exports" $WORK_DIR/ArchHUD.wrapped.conf > $CONF_DST
+    sed "/__wrap_lua__printError=true/e cat $WORK_DIR/ArchHUD.exports" $WORK_DIR/ArchHUD.wrapped.conf > $CONF_DST
 fi
 
 # Fix up minified L_TEXTs which requires a space after the comma
@@ -85,6 +85,6 @@ sed -i -E 's/L_TEXT\(("[^"]*"),("[^"]*")\)/L_TEXT(\1, \2)/g' $CONF_DST
 
 echo "$VERSION_NUMBER" > ${ROOTDIR}/ArchHUD.conf.version
 
-echo "Compiled v$VERSION_NUMBER at ${CONF_DST}"
+echo "Compiled v${VERSION_NUMBER} at ${CONF_DST}"
 
 rm $WORK_DIR/*
