@@ -1,5 +1,9 @@
 ## ChangeLog - Most recent changes at the top
 
+Version 2.105 - MyDU update and bug fixes
+- Implement calculations for the anti-gravity fuel tank.
+- Resolve issues with Lua property saving and duplication.
+
 Version 2.104 - MyDU Enhancement Update
 - Improve fuel tank detection, allowing creation of new fuel tank
 - Change default user control scheme to "keyboard"
