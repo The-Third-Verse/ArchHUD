@@ -16,7 +16,7 @@ local fueltanks = {
     ["801882806"] = 2700,
     ["801882807"] = 3510,
     ["801882804"] = 4560,
-    
+
     -- Atmo L
     ["681896062"] = 16640,
     ["4181605365"] = 21632,
@@ -46,7 +46,7 @@ local fueltanks = {
     ["3797917193"] = 2700,
     ["3797917192"] = 3510,
     ["3797917195"] = 4560,
-    
+
     -- Space L
     ["1567224122"] = 16640,
     ["1298642304"] = 21632,
@@ -59,18 +59,59 @@ local fueltanks = {
     ["m"] = 1600,
     ["l"] = 12800,
 }
+local fuelmodifiers = {
+    ["2078334942"] = 0.9,
+    ["2216300178"] = 0.9,
+    ["2199218873"] = 0.9,
+    ["2268129307"] = 0.9,
+    ["4106743733"] = 0.9,
+    ["637265250"] = 0.9,
+    ["3580444026"] = 0.9,
+    ["319251893"] = 0.9,
+
+    ["3464984253"] = 0.81,
+    ["1104915586"] = 0.81,
+    ["121825379"] = 0.81,
+    ["185422505"] = 0.81,
+    ["4188179628"] = 0.81,
+    ["55848614"] = 0.81,
+    ["4169669296"] = 0.81,
+    ["2010490156"] = 0.81,
+
+    ["3464984250"] = 0.729,
+    ["1104915587"] = 0.729,
+    ["121825378"] = 0.729,
+    ["185422504"] = 0.729,
+    ["4188179631"] = 0.729,
+    ["55848615"] = 0.729,
+    ["4169669297"] = 0.729,
+    ["2010490159"] = 0.729,
+
+    ["3464984251"] = 0.6561,
+    ["1104915584"] = 0.6561,
+    ["121825381"] = 0.6561,
+    ["185422511"] = 0.6561,
+    ["4188179630"] = 0.6561,
+    ["55848612"] = 0.6561,
+    ["4169669302"] = 0.6561,
+    ["2010490158"] = 0.6561,
+}
 
 function GetFuelTankMaxVolume(itemId, size)
     return fueltanks[itemId .. ""] or fueltanks[size .. ""] or 0
 end
 
+function GetFuelTankModifier(itemId)
+    return fuelmodifiers[itemId .. ""] or 1
+end
+
 function GetFuelTankPrefixes(fuelType)
     if fuelType == "atmo" then
-        return {"Atmospheric ", "Uncommon Opt", "Advanced Opt", "Rare Optimiz", "Exotic Optim"}
+        return { "Atmospheric ", "Uncommon Opt", "Advanced Opt", "Rare Optimiz", "Exotic Optim", "Uncommon Gra", "Advanced Gra", "Rare Gravity", "Exotic Gravi" }
     elseif fuelType == "space" then
-        return {"Space Fuel T", "Uncommon Opt", "Advanced Opt", "Rare Optimiz", "Exotic Optim"}
+        return { "Space Fuel T", "Uncommon Opt", "Advanced Opt", "Rare Optimiz", "Exotic Optim", "Uncommon Gra", "Advanced Gra", "Rare Gravity", "Exotic Gravi" }
     elseif fuelType == "rocket" then
-        return {"Rocket Fuel "}
+        return { "Rocket Fuel " }
     end
     return {}
 end

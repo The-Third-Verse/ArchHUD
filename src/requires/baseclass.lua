@@ -332,13 +332,13 @@ function programClass(Nav, c, u, atlas, vBooster, hover, telemeter_1, antigrav, 
                             local name = eleName(elementsID[k])
                             local curMass = mass - massEmpty
                             if isInClass(itemId, "AtmoFuelContainer") then
-                                atmoTanks[#atmoTanks + 1] = buildTank(elementsID[k], name, "atmo", vanillaMaxVolume, atmoUnitMassByLitter,
+                                atmoTanks[#atmoTanks + 1] = buildTank(elementsID[k], name, "atmo", vanillaMaxVolume, atmoUnitMassByLitter * GetFuelTankModifier(itemId),
                                                                         fuelTankHandlingAtmo, massEmpty, curMass, curTime, slottedTanksAtmo)
                             elseif isInClass(itemId, "RocketFuelContainer") then
-                                rocketTanks[#rocketTanks + 1] = buildTank(elementsID[k], name, "rocket", vanillaMaxVolume, rocketUnitMassByLitter,
+                                rocketTanks[#rocketTanks + 1] = buildTank(elementsID[k], name, "rocket", vanillaMaxVolume, rocketUnitMassByLitter * GetFuelTankModifier(itemId),
                                                                     fuelTankHandlingRocket / 2, massEmpty, curMass, curTime, slottedTanksRocket)
                             elseif isInClass(itemId, "SpaceFuelContainer") then
-                                spaceTanks[#spaceTanks + 1] = buildTank(elementsID[k], name, "space", vanillaMaxVolume, spaceUnitMassByLitter,
+                                spaceTanks[#spaceTanks + 1] = buildTank(elementsID[k], name, "space", vanillaMaxVolume, spaceUnitMassByLitter * GetFuelTankModifier(itemId),
                                                                         fuelTankHandlingSpace, massEmpty, curMass, curTime, slottedTanksSpace)
                             end
                         end
