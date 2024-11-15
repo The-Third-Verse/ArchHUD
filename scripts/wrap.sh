@@ -28,7 +28,7 @@ WORK_DIR=${ROOTDIR}/scripts/work
 # Extract the exports because the minifier will eat them.
 grep "\-- \?export:" $LUA_SRC | sed -e 's/^[ \t]*/        /' -e 's/-- export:/--export:/' > $WORK_DIR/ArchHUD.exports
 
-VERSION_NUMBER=`grep "VERSION_NUMBER = .*" $LUA_SRC | sed -E "s/\s*VERSION_NUMBER = (.*)/\1/"`
+VERSION_NUMBER=`grep "VERSION_NUMBER = .*" $LUA_SRC | sed -E "s/\s*VERSION_NUMBER = ([0-9\.]*)[\r\n]*/\1/"`
 if [[ "${VERSION_NUMBER}" == "" ]]; then
     echo "ERROR: Failed to detect version number"; exit 1
 fi
